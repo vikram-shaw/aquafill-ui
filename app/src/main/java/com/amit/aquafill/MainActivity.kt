@@ -1,5 +1,6 @@
 package com.amit.aquafill
 
+import com.amit.aquafill.presentation.ui.authorized.MainScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -11,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.amit.aquafill.presentation.ui.authorized.NavigationDrawer
 import com.amit.aquafill.presentation.ui.unauthorized.ForgetPassword
 import com.amit.aquafill.presentation.ui.unauthorized.Login
 import com.amit.aquafill.presentation.ui.unauthorized.Register
@@ -30,7 +30,7 @@ class MainActivity : ComponentActivity() {
                         composable(route = "login") { Login(navController) }
                         composable(route = "register") { Register(navController) }
                         composable(route = "forget") { ForgetPassword(navController) }
-                        composable(route = "nav") { NavigationDrawer() }
+                        composable(route = "main") { MainScreen() }
                     }
                 }
             }
