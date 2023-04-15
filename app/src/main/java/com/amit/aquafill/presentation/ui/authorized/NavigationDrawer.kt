@@ -1,12 +1,10 @@
 package com.amit.aquafill.presentation.ui.authorized
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -14,54 +12,35 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import com.amit.aquafill.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-
-//@ExperimentalMaterial3Api
-//@Preview(showBackground = true, showSystemUi = true)
-//@Composable
-//fun DefaultPreview() {
-//    AquaFillTheme {
-//        NavigationDrawer(rememberNavController())
-//    }
-//}
-
-
 @ExperimentalMaterial3Api
 @Composable
-fun NavigationDrawer(navController: NavHostController) {
+fun NavigationDrawer() {
     val state = DrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val currentRoute = remember { mutableStateOf("entries") }
 
     ModalNavigationDrawer(drawerContent = {
-        NavigationDrawerContent(navController, state, scope)
-    },
+            NavigationDrawerContent(currentRoute, state, scope)
+        },
+        content = {
+            if(currentRoute.value == "entries") {
+                ManageEntitiesScreen()
+            } else {
+
+                ManageCustomerScreen()
+            }
+        },
         scrimColor = Color.LightGray,
         drawerState = state
-    ) {
-//        TopAppBar(
-//            title = { },
-//            navigationIcon = {
-//                IconButton(onClick = {
-//                    scope.launch {
-//                        if(state.isOpen)
-//                            state.close()
-//                        else
-//                            state.open()
-//                    }
-//                }) {
-//                    Icon(Icons.Rounded.Menu, contentDescription = null)
-//                }
-//            },
-//        )
-    }
+    )
 }
 
 @Composable
-fun NavigationDrawerContent(navController: NavHostController, state: DrawerState, scope: CoroutineScope) {
+fun NavigationDrawerContent(currentRoute: MutableState<String>, state: DrawerState, scope: CoroutineScope) {
     Column(
         modifier = Modifier
             .fillMaxHeight()
@@ -81,7 +60,6 @@ fun NavigationDrawerContent(navController: NavHostController, state: DrawerState
                 )
             }
         }
-        Divider(color = Color.LightGray)
         Column {
             Spacer(modifier = Modifier.padding(7.dp))
             Text("Amit Shaw")
@@ -92,9 +70,9 @@ fun NavigationDrawerContent(navController: NavHostController, state: DrawerState
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.clickable {
-                    navController.popBackStack("entries", false)
                     scope.launch {
                         state.close()
+                        currentRoute.value = "entries"
                     }
                 }) {
                 Icon(
@@ -111,12 +89,12 @@ fun NavigationDrawerContent(navController: NavHostController, state: DrawerState
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.clickable {
-                    navController.popBackStack("entries", false)
-                    navController.navigate("customer")
                     scope.launch {
                         state.close()
+                        currentRoute.value = "customer"
                     }
-                }) {
+                }
+            ) {
                 Icon(
                     ImageVector.vectorResource(id = R.drawable.af_manage_customer_24),
                     contentDescription = "people alt",

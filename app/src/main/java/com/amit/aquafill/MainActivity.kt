@@ -13,7 +13,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.amit.aquafill.presentation.ui.unauthorized.ForgetPassword
-import com.amit.aquafill.presentation.ui.unauthorized.Login
+import com.amit.aquafill.presentation.ui.unauthorized.login.Login
 import com.amit.aquafill.presentation.ui.unauthorized.Register
 import com.amit.aquafill.ui.theme.AquaFillTheme
 
