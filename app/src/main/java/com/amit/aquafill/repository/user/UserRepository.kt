@@ -16,18 +16,21 @@ class UserRepository @Inject constructor(private val userService: UserService): 
     val userResponseLiveData: LiveData<NetworkResult<UserResponse>>
         get() = _userResponseLiveData
 
-    override suspend fun signup(email: String, password: String) {
+    override suspend fun signup(email: String, password: String): Response<UserResponse> {
         val response = userService.signup(user = User(email, password))
         handleResponse(response)
+        return response
     }
-    override suspend fun reset(email: String, password: String) {
+    override suspend fun reset(email: String, password: String): Response<UserResponse> {
         val response = userService.reset(user = User(email, password))
         handleResponse(response)
+        return response
     }
 
-    override suspend fun signing(email: String, password: String) {
+    override suspend fun signing(email: String, password: String): Response<UserResponse> {
         val response = userService.signing(user = User(email, password))
         handleResponse(response)
+        return response
     }
 
     private fun handleResponse(response: Response<UserResponse>) {

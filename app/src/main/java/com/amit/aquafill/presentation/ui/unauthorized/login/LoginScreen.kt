@@ -9,19 +9,21 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.amit.aquafill.repository.user.IUserRepository
 
 @Composable
 fun Login(navController: NavHostController) {
-    val loginViewModel: LoginViewModel = viewModel()
+    val loginViewModel = hiltViewModel<LoginViewModel>()
     val loginUiState by loginViewModel.uiState.collectAsState()
 
     Column(modifier = Modifier
@@ -92,7 +94,7 @@ fun Login(navController: NavHostController) {
                 color = Color.Blue)
         }
         Button(onClick = {
-            navController.navigate("main")
+             loginViewModel.login(navController)
         },
         enabled = loginViewModel.isValid()) {
             Text(

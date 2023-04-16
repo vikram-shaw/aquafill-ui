@@ -13,9 +13,10 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.amit.aquafill.R
+import com.amit.aquafill.network.model.UserDto
+import com.amit.aquafill.utils.TokenManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-
 @ExperimentalMaterial3Api
 @Composable
 fun NavigationDrawer() {
@@ -30,7 +31,6 @@ fun NavigationDrawer() {
             if(currentRoute.value == "entries") {
                 ManageEntitiesScreen()
             } else {
-
                 ManageCustomerScreen()
             }
         },
@@ -62,7 +62,7 @@ fun NavigationDrawerContent(currentRoute: MutableState<String>, state: DrawerSta
         }
         Column {
             Spacer(modifier = Modifier.padding(7.dp))
-            Text("Amit Shaw")
+            Text("Amit shaw")
             Spacer(modifier = Modifier.padding(7.dp))
             Text("shaw2amit@gmail.com")
             Spacer(modifier = Modifier.padding(7.dp))

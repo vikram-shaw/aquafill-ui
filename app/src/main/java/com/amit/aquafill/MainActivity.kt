@@ -16,9 +16,10 @@ import com.amit.aquafill.presentation.ui.unauthorized.ForgetPassword
 import com.amit.aquafill.presentation.ui.unauthorized.login.Login
 import com.amit.aquafill.presentation.ui.unauthorized.Register
 import com.amit.aquafill.ui.theme.AquaFillTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {

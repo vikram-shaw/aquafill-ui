@@ -13,22 +13,19 @@ import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
-class NetworkModule {
+object NetworkModule {
     @Singleton
     @Provides
-    fun provideRetrofitBuilder(): Retrofit.Builder {
-        return Retrofit.Builder().baseUrl("https://aqua-fill.onrender.com")
+    fun provideRetrofitBuilder(): Retrofit.Builder =
+        Retrofit.Builder().baseUrl("https://aqua-fill.onrender.com")
             .addConverterFactory(GsonConverterFactory.create())
-    }
-    @Singleton
-    @Provides
-    fun provideUserService(retrofitBuilder: Retrofit.Builder): UserService {
-        return retrofitBuilder.build().create(UserService::class.java)
-    }
 
     @Singleton
     @Provides
-    fun provideUserRepository(userService: UserService): IUserRepository {
-        return UserRepository(userService)
-    }
+    fun provideUserService(retrofitBuilder: Retrofit.Builder): UserService =
+        retrofitBuilder.build().create(UserService::class.java)
+
+    @Singleton
+    @Provides
+    fun provideUserRepository(userService: UserService): IUserRepository = UserRepository(userService)
 }
