@@ -2,6 +2,7 @@ package com.amit.aquafill.presentation.ui.authorized
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -10,11 +11,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.amit.aquafill.R
-import com.amit.aquafill.network.model.UserDto
-import com.amit.aquafill.utils.TokenManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 @ExperimentalMaterial3Api
@@ -41,6 +42,8 @@ fun NavigationDrawer() {
 
 @Composable
 fun NavigationDrawerContent(currentRoute: MutableState<String>, state: DrawerState, scope: CoroutineScope) {
+    val navigationDrawerViewModel = hiltViewModel<NavigationDrawerViewModel>()
+    val uiState = navigationDrawerViewModel.uiState.collectAsState()
     Column(
         modifier = Modifier
             .fillMaxHeight()
@@ -52,19 +55,13 @@ fun NavigationDrawerContent(currentRoute: MutableState<String>, state: DrawerSta
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Card(shape = RoundedCornerShape(200.dp)) {
-                Text(
-                    text = "AS",
-                    fontSize = 30.sp,
-                    modifier = Modifier.padding(20.dp)
-                )
-            }
+            InitialName(uiState)
         }
         Column {
             Spacer(modifier = Modifier.padding(7.dp))
-            Text("Amit shaw")
+            Text(uiState.value.name)
             Spacer(modifier = Modifier.padding(7.dp))
-            Text("shaw2amit@gmail.com")
+            Text(uiState.value.email)
             Spacer(modifier = Modifier.padding(7.dp))
 
             Row(
@@ -117,6 +114,24 @@ fun NavigationDrawerContent(currentRoute: MutableState<String>, state: DrawerSta
                 Spacer(modifier = Modifier.padding(6.dp))
                 Text(text = "Logout")
             }
+        }
+    }
+}
+@Composable
+private fun InitialName(uiState: State<NavigationDrawerUIState>) {
+    Card(
+        shape = CircleShape,
+        modifier = Modifier.padding(30.dp)
+    ) {
+        Column(
+            modifier = Modifier.size(80.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = uiState.value.initialName,
+                fontSize = 30.sp,
+            )
         }
     }
 }

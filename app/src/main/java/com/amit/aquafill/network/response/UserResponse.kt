@@ -10,3 +10,10 @@ data class UserResponse(
     @SerializedName("token")
     var token: String
 )
+
+data class UserInfoResponse(
+    @SerializedName("name")
+    var name: String,
+    @SerializedName("email")
+    var email: String
+)
