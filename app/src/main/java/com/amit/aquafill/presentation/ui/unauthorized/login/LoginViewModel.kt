@@ -1,14 +1,16 @@
 package com.amit.aquafill.presentation.ui.unauthorized.login
 
+import android.content.Context
 import android.util.Log
-import androidx.lifecycle.LiveData
+import android.widget.Toast
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
-import com.amit.aquafill.network.response.UserResponse
 import com.amit.aquafill.network.util.NetworkResult
 import com.amit.aquafill.repository.user.IUserRepository
-import com.amit.aquafill.repository.user.UserRepository
 import com.amit.aquafill.utils.TokenManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,6 +24,8 @@ data class LoginUiState(
     val currentEmailErrors: MutableList<String> = mutableListOf(),
     val currentPassword: String = "",
     val currentPasswordErrors: MutableList<String> = mutableListOf(),
+    var loading: MutableState<Boolean> = mutableStateOf(false),
+    val valid: MutableState<Boolean> = mutableStateOf(false)
 )
 
 @HiltViewModel
@@ -32,49 +36,54 @@ class LoginViewModel @Inject constructor(private val userRepository: IUserReposi
 
     private val emailPattern: Regex = Regex("[a-zA-Z\\d._-]+@[a-z]+\\.+[a-z]+")
 
-    fun updateEmail(email: String ) {
+    fun updateEmail(email: String) {
         val errors = mutableListOf<String>()
-        if(!email.matches(emailPattern)) {
+        val isEmailValid = if(!email.matches(emailPattern)) {
+            Log.v("Tag",email)
             errors.add("Enter valid email")
+            false
+        } else {
+            errors.clear()
+            true
         }
         _uiState.value = _uiState.value.copy(
             currentEmail = email.trim(),
-            currentEmailErrors = errors
+            currentEmailErrors = errors,
         )
+        _uiState.value.valid.value = isEmailValid
     }
 
     fun updatePassword(password: String) {
         val errors = mutableListOf<String>()
-        if(password.trim().length < 6)
+        val isPasswordValid = if(password.trim().length < 6) {
             errors.add("Please enter at least 6 characters.")
+            false
+        } else {
+            true
+        }
 
         _uiState.value = _uiState.value.copy(
             currentPassword = password.trim(),
-            currentPasswordErrors = errors
+            currentPasswordErrors = errors,
         )
+        _uiState.value.valid.value = isPasswordValid
     }
 
-    fun isValid(): Boolean {
-        if(_uiState.value.currentEmail.isEmpty())
-            return false
-        if(_uiState.value.currentPassword.isEmpty())
-            return false
-        if(_uiState.value.currentPasswordErrors.isNotEmpty())
-            return false
-        if(_uiState.value.currentEmailErrors.isNotEmpty())
-            return false
-        return true
-    }
-
-    fun login(navController: NavHostController) {
+    fun login(navController: NavHostController, context: Context) {
+        uiState.value.loading.value = true
         viewModelScope.launch {
-            val response = userRepository.signing(_uiState.value.currentEmail, _uiState.value.currentPassword)
-            Log.v("Login",response.isSuccessful.toString())
-            if(response.isSuccessful && response.body() != null) {
-                tokenManager.save(response.body()!!.token, response.body()!!.user)
-                navController.navigate("main")
-            } else {
-
+            when(val response = userRepository.signing(_uiState.value.currentEmail, _uiState.value.currentPassword)) {
+                is NetworkResult.Success -> {
+                    uiState.value.loading.value = false
+                    tokenManager.save(response.data!!.token, response.data!!.user)
+                    Toast.makeText(context, "You are successfully logged in", Toast.LENGTH_SHORT).show()
+                    navController.navigate("main")
+                }
+                else -> {
+                    uiState.value.loading.value = false
+                    Log.v("Error", response.message!!)
+                    Toast.makeText(context, response.message, Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }

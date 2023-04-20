@@ -16,21 +16,51 @@ class UserRepository @Inject constructor(private val userService: UserService): 
     val userResponseLiveData: LiveData<NetworkResult<UserResponse>>
         get() = _userResponseLiveData
 
-    override suspend fun signup(email: String, password: String): Response<UserResponse> {
-        val response = userService.signup(user = User(email, password))
-        handleResponse(response)
-        return response
+    override suspend fun signup(email: String, password: String): NetworkResult<UserResponse> {
+        return try {
+            val response = userService.signup(user = User(email, password))
+            if(response.isSuccessful) {
+                NetworkResult.Success(
+                    data = response.body()!!
+                )
+            } else {
+                NetworkResult.Error("Something went wrong...")
+            }
+        } catch (e: Exception) {
+            print(e.message)
+            NetworkResult.Error("Please try after sometime...")
+        }
     }
-    override suspend fun reset(email: String, password: String): Response<UserResponse> {
-        val response = userService.reset(user = User(email, password))
-        handleResponse(response)
-        return response
+    override suspend fun reset(email: String, password: String): NetworkResult<UserResponse> {
+        return try {
+            val response = userService.reset(user = User(email, password))
+            if(response.isSuccessful) {
+                NetworkResult.Success(
+                    data = response.body()!!
+                )
+            } else {
+                NetworkResult.Error("Something went wrong...")
+            }
+        } catch (e: Exception) {
+            print(e.message)
+            NetworkResult.Error("Please try after sometime...")
+        }
     }
 
-    override suspend fun signing(email: String, password: String): Response<UserResponse> {
-        val response = userService.signing(user = User(email, password))
-        handleResponse(response)
-        return response
+    override suspend fun signing(email: String, password: String): NetworkResult<UserResponse> {
+        return try {
+            val response = userService.signing(user = User(email, password))
+            if(response.isSuccessful) {
+                NetworkResult.Success(
+                    data = response.body()!!
+                )
+            } else {
+                NetworkResult.Error("Something went wrong...")
+            }
+        } catch (e: Exception) {
+            print(e.message)
+            NetworkResult.Error("Please try after sometime...")
+        }
     }
 
     private fun handleResponse(response: Response<UserResponse>) {

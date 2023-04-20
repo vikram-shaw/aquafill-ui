@@ -1,17 +1,24 @@
 package com.amit.aquafill.presentation.ui.unauthorized.login
 
+import android.content.Context
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -25,6 +32,8 @@ import com.amit.aquafill.repository.user.IUserRepository
 fun Login(navController: NavHostController) {
     val loginViewModel = hiltViewModel<LoginViewModel>()
     val loginUiState by loginViewModel.uiState.collectAsState()
+    val focusManager = LocalFocusManager.current
+    val context = LocalContext.current
 
     Column(modifier = Modifier
         .fillMaxHeight()
@@ -50,7 +59,8 @@ fun Login(navController: NavHostController) {
         Row {
             loginUiState.currentEmailErrors.forEach {
                 Text(
-                    modifier = Modifier.padding(vertical = 8.dp)
+                    modifier = Modifier
+                        .padding(vertical = 8.dp)
                         .wrapContentWidth(Alignment.Start)
                         .fillMaxWidth(),
                     text = it,
@@ -71,7 +81,8 @@ fun Login(navController: NavHostController) {
         Row {
             loginUiState.currentPasswordErrors.forEach {
                 Text(
-                    modifier = Modifier.padding(vertical = 8.dp)
+                    modifier = Modifier
+                        .padding(vertical = 8.dp)
                         .wrapContentWidth(Alignment.Start)
                         .fillMaxWidth(),
                     text = it,
@@ -89,14 +100,17 @@ fun Login(navController: NavHostController) {
                     )
                     .wrapContentWidth(Alignment.End)
                     .clickable {
-                       navController.navigate("forget")
+                        navController.navigate("forget")
                     },
                 color = Color.Blue)
         }
-        Button(onClick = {
-             loginViewModel.login(navController)
-        },
-        enabled = loginViewModel.isValid()) {
+        Button(
+            onClick = {
+                loginViewModel.login(navController,context)
+                focusManager.clearFocus()
+            },
+            enabled = loginUiState.valid.value,
+        ) {
             Text(
                 "Login", modifier = Modifier.padding(
                     start = 30.dp,
@@ -111,5 +125,19 @@ fun Login(navController: NavHostController) {
             ),
             style = TextStyle(color = Color.Blue),
         )
+        if(loginUiState.loading.value) {
+            val strokeWidth = 5.dp
+            CircularProgressIndicator(
+                modifier = Modifier.drawBehind {
+                    drawCircle(
+                        Color.Blue,
+                        radius = size.width / 2 - strokeWidth.toPx() / 2,
+                        style = Stroke(strokeWidth.toPx())
+                    )
+                },
+                color = Color.LightGray,
+                strokeWidth = strokeWidth,
+            )
+        }
     }
 }
