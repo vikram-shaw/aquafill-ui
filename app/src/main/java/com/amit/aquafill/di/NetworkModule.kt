@@ -1,8 +1,11 @@
 package com.amit.aquafill.di
 
 import com.amit.aquafill.network.AuthInterceptor
+import com.amit.aquafill.network.CustomerService
 import com.amit.aquafill.network.UserAuthService
 import com.amit.aquafill.network.UserService
+import com.amit.aquafill.repository.customer.CustomerRepository
+import com.amit.aquafill.repository.customer.ICustomerRepository
 import com.amit.aquafill.repository.user.IUserRepository
 import com.amit.aquafill.repository.user.UserRepository
 import dagger.Module
@@ -44,4 +47,13 @@ object NetworkModule {
     fun provideUserRepository(userService: UserService, userAuthService: UserAuthService):
             IUserRepository = UserRepository(userService, userAuthService)
 
+    @Singleton
+    @Provides
+    fun provideCustomerAuth(retrofitBuilder: Builder, okHttpClient: OkHttpClient): CustomerService =
+        retrofitBuilder.client(okHttpClient).build().create(CustomerService::class.java)
+
+    @Singleton
+    @Provides
+    fun provideCustomerRepository(customerService: CustomerService):
+            ICustomerRepository = CustomerRepository(customerService)
 }
