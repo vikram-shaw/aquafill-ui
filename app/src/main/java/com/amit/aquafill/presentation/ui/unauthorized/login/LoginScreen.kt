@@ -27,6 +27,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.amit.aquafill.repository.user.IUserRepository
+import com.amit.aquafill.routes.Routes
 
 @Composable
 fun Login(navController: NavHostController) {
@@ -34,6 +35,8 @@ fun Login(navController: NavHostController) {
     val loginUiState by loginViewModel.uiState.collectAsState()
     val focusManager = LocalFocusManager.current
     val context = LocalContext.current
+
+    loginViewModel.tryLogin(navController)
 
     Column(modifier = Modifier
         .fillMaxHeight()
@@ -100,7 +103,7 @@ fun Login(navController: NavHostController) {
                     )
                     .wrapContentWidth(Alignment.End)
                     .clickable {
-                        navController.navigate("forget")
+                        navController.navigate(Routes.Forget.name)
                     },
                 color = Color.Blue)
         }
@@ -119,7 +122,7 @@ fun Login(navController: NavHostController) {
             )
         }
         ClickableText(text = AnnotatedString("Don't have an account? Sign up"),
-            onClick = { navController.navigate("register")},
+            onClick = { navController.navigate(Routes.Register.name)},
             modifier = Modifier.padding(
                 top = 20.dp
             ),

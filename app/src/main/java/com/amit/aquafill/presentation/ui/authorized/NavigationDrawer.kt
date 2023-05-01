@@ -3,7 +3,6 @@ package com.amit.aquafill.presentation.ui.authorized
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -11,11 +10,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.amit.aquafill.R
+import com.amit.aquafill.routes.Routes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 @ExperimentalMaterial3Api
@@ -23,13 +22,13 @@ import kotlinx.coroutines.launch
 fun NavigationDrawer() {
     val state = DrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    val currentRoute = remember { mutableStateOf("entries") }
+    val currentRoute = remember { mutableStateOf(Routes.Customers.name) }
 
     ModalNavigationDrawer(drawerContent = {
             NavigationDrawerContent(currentRoute, state, scope)
         },
         content = {
-            if(currentRoute.value == "entries") {
+            if(currentRoute.value == Routes.Entries.name) {
                 ManageEntitiesScreen()
             } else {
                 ManageCustomerScreen()
@@ -47,6 +46,7 @@ fun NavigationDrawerContent(currentRoute: MutableState<String>, state: DrawerSta
     Column(
         modifier = Modifier
             .fillMaxHeight()
+            .padding(15.dp)
     ) {
         Column(
             modifier = Modifier
@@ -69,7 +69,7 @@ fun NavigationDrawerContent(currentRoute: MutableState<String>, state: DrawerSta
                 modifier = Modifier.clickable {
                     scope.launch {
                         state.close()
-                        currentRoute.value = "entries"
+                        currentRoute.value = Routes.Entries.name
                     }
                 }) {
                 Icon(
@@ -88,7 +88,7 @@ fun NavigationDrawerContent(currentRoute: MutableState<String>, state: DrawerSta
                 modifier = Modifier.clickable {
                     scope.launch {
                         state.close()
-                        currentRoute.value = "customer"
+                        currentRoute.value = Routes.Customers.name
                     }
                 }
             ) {

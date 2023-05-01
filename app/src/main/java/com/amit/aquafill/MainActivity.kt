@@ -14,6 +14,7 @@ import androidx.navigation.compose.rememberNavController
 import com.amit.aquafill.presentation.ui.unauthorized.ForgetPassword
 import com.amit.aquafill.presentation.ui.unauthorized.login.Login
 import com.amit.aquafill.presentation.ui.unauthorized.Register
+import com.amit.aquafill.routes.Routes
 import com.amit.aquafill.ui.theme.AquaFillTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -26,11 +27,11 @@ class MainActivity : ComponentActivity() {
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                     val navController = rememberNavController()
-                    NavHost(navController = navController, startDestination = "login") {
-                        composable(route = "login") { Login(navController) }
-                        composable(route = "register") { Register(navController) }
-                        composable(route = "forget") { ForgetPassword(navController) }
-                        composable(route = "main") { MainScreen() }
+                    NavHost(navController = navController, startDestination = Routes.Login.name) {
+                        composable(route = Routes.Login.name) { Login(navController) }
+                        composable(route = Routes.Register.name) { Register(navController) }
+                        composable(route = Routes.Forget.name) { ForgetPassword(navController) }
+                        composable(route = Routes.Main.name) { MainScreen() }
                     }
                 }
             }

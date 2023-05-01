@@ -3,7 +3,7 @@ buildscript {
         google()
     }
     ext {
-        compose_version = '1.4.1'
+        compose_version = '1.4.2'
     }
     dependencies {
         // other plugins...

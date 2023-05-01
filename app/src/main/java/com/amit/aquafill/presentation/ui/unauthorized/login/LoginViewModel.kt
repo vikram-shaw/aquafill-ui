@@ -8,9 +8,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.amit.aquafill.network.util.NetworkResult
 import com.amit.aquafill.repository.user.IUserRepository
+import com.amit.aquafill.routes.Routes
 import com.amit.aquafill.utils.TokenManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,7 +26,7 @@ data class LoginUiState(
     val currentEmailErrors: MutableList<String> = mutableListOf(),
     val currentPassword: String = "",
     val currentPasswordErrors: MutableList<String> = mutableListOf(),
-    var loading: MutableState<Boolean> = mutableStateOf(false),
+    val loading: MutableState<Boolean> = mutableStateOf(false),
     val valid: MutableState<Boolean> = mutableStateOf(false)
 )
 
@@ -34,8 +36,13 @@ class LoginViewModel @Inject constructor(private val userRepository: IUserReposi
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
-    private val emailPattern: Regex = Regex("[a-zA-Z\\d._-]+@[a-z]+\\.+[a-z]+")
+    private val emailPattern: Regex = Regex("[a-zA-Z\\d._-]+@[a-z]+\\.+[a-z]")
 
+    fun tryLogin(navController: NavController) {
+        if(tokenManager.getToken() != null) {
+            navController.navigate(Routes.Main.name)
+        }
+    }
     fun updateEmail(email: String) {
         val errors = mutableListOf<String>()
         val isEmailValid = if(!email.matches(emailPattern)) {
