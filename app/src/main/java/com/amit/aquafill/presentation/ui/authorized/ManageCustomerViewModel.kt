@@ -1,6 +1,7 @@
 package com.amit.aquafill.presentation.ui.authorized
 
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.text.toLowerCase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -69,6 +70,28 @@ class ManageCustomerViewModel @Inject constructor(
                 }
                 is NetworkResult.Loading -> {
                     Log.d("customer info", response.toString())
+                }
+            }
+        }
+    }
+
+    fun deleteCustomer(
+        id: String?,
+        close: ()-> Unit = {}) {
+        if(id != null) {
+            viewModelScope.launch {
+                when (val response = customerRepository.delete(id)) {
+                    is NetworkResult.Success -> {
+                        getCustomers()
+                        close()
+                    }
+                    is NetworkResult.Error -> {
+                        Log.d("delete error", response.message.toString())
+                        close()
+                    }
+                    is NetworkResult.Loading -> {
+                        Log.d("delete loading", response.toString())
+                    }
                 }
             }
         }

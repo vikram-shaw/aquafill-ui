@@ -28,7 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
+import androidx.compose.ui.window.Popup
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.amit.aquafill.R
 import com.amit.aquafill.ui.theme.AquaFillTheme
@@ -135,11 +135,13 @@ fun AddCustomer(
 }
 
 @Composable
-fun ManageCustomerScreen() {
+fun manageCustomerScreen() {
     val manageCustomerViewModel = hiltViewModel<ManageCustomerViewModel>()
     val customerUIState = manageCustomerViewModel.uiCustomerState.collectAsState()
     var search by remember { mutableStateOf("") }
     var expended by remember { mutableStateOf(false) }
+    var popup by remember { mutableStateOf(false) }
+    var deleteCustomerId: String? = null;
 
     Scaffold(
         topBar = {
@@ -167,6 +169,41 @@ fun ManageCustomerScreen() {
             }
         }
     ) {
+        if(popup) {
+            Popup(
+                alignment = Alignment.Center,
+                onDismissRequest = { popup = false}
+            ){
+                Card(
+                    elevation = CardDefaults.cardElevation(4.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(0.8f)
+                            .background(color = Color.White),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(text = "Do you want to delete?")
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceEvenly,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Button(onClick = {
+                                manageCustomerViewModel.deleteCustomer(deleteCustomerId) {
+                                    popup = false
+                                }
+                            }
+                            ) {
+
+                                Text("Yes")
+                            }
+                            Button(onClick = { popup = false }) {
+                                Text("No")
+                            }
+                        }
+                    }
+                }
+            }
+        }
         DropdownMenu(
             modifier = Modifier
                 .fillMaxWidth(0.8f)
@@ -222,7 +259,11 @@ fun ManageCustomerScreen() {
                             Row {
                                 Icon(
                                     ImageVector.vectorResource(id = R.drawable.af_delete_outline_24),
-                                    contentDescription = "delete"
+                                    contentDescription = "delete",
+                                    modifier = Modifier.clickable {
+                                        popup = true
+                                        deleteCustomerId = customerUIState.value.customers[it].id
+                                    }
                                 )
                                 Spacer(modifier = Modifier.padding(5.dp))
                                 Icon(

@@ -31,7 +31,7 @@ fun NavigationDrawer() {
             if(currentRoute.value == Routes.Entries.name) {
                 ManageEntitiesScreen()
             } else {
-                ManageCustomerScreen()
+                manageCustomerScreen()
             }
         },
         scrimColor = Color.LightGray,
