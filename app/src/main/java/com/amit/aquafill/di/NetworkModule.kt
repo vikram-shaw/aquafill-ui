@@ -16,7 +16,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
-import retrofit2.Retrofit
 import retrofit2.Retrofit.Builder
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
@@ -26,13 +25,13 @@ import javax.inject.Singleton
 object NetworkModule {
     @Singleton
     @Provides
-    fun provideRetrofitBuilder(): Retrofit.Builder =
-        Retrofit.Builder().baseUrl("https://aqua-fill.onrender.com")
+    fun provideRetrofitBuilder(): Builder =
+        Builder().baseUrl("https://aqua-fill.onrender.com")
             .addConverterFactory(GsonConverterFactory.create())
 
     @Singleton
     @Provides
-    fun provideUserService(retrofitBuilder: Retrofit.Builder): UserService =
+    fun provideUserService(retrofitBuilder: Builder): UserService =
         retrofitBuilder.build().create(UserService::class.java)
     @Singleton
     @Provides

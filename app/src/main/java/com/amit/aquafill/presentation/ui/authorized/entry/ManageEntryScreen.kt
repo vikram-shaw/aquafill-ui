@@ -21,6 +21,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,6 +34,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.amit.aquafill.R
 import com.amit.aquafill.network.model.EntryDto
 import java.time.Instant
@@ -62,31 +64,23 @@ fun RenderPreview() {
 
 }
 
-data class Option<T>(val key: T, val text: String, var isSelected: Boolean = false)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ManageEntitiesScreen() {
+    val viewModel = hiltViewModel<CustomerViewModel>()
     Column {
         var expanded by remember { mutableStateOf(false) }
         var selectedIndex by remember { mutableStateOf(-1) }
-        var options by remember {
-            mutableStateOf(
-                listOf(
-                    Option("1", "vikram"),
-                    Option("2", "pritam"),
-                    Option("3","amit"),
-                    Option("4", "ankit")
-                )
-            )
-        }
+        val options = viewModel.uiState.collectAsState()
         Column {
             Box {
                 OutlinedButton(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = { expanded = true },
+
                 ) {
-                    Text(if(selectedIndex != -1) options[selectedIndex].text else "")
+                    Text(if(selectedIndex != -1) options.value.customers[selectedIndex].text else "Please select a customer")
                 }
                 DropdownMenu(
                     expanded = expanded,
@@ -94,7 +88,7 @@ fun ManageEntitiesScreen() {
                     modifier = Modifier.fillMaxWidth()
                         .padding(5.dp)
                 ) {
-                    options.forEachIndexed { i, option ->
+                    options.value.customers.forEachIndexed { i, option ->
                         DropdownMenuItem(
                             text = { Text(option.text) },
                             onClick = {
@@ -161,7 +155,6 @@ fun ManageEntitiesScreen() {
                     )
                 }
             }
-
 
             Entry()
             Entry()
