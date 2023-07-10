@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.amit.aquafill.R
+import com.amit.aquafill.presentation.ui.authorized.customer.manageCustomerScreen
 import com.amit.aquafill.presentation.ui.authorized.entry.ManageEntitiesScreen
 import com.amit.aquafill.routes.Routes
 import kotlinx.coroutines.CoroutineScope
@@ -23,7 +24,7 @@ import kotlinx.coroutines.launch
 fun NavigationDrawer() {
     val state = DrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    val currentRoute = remember { mutableStateOf(Routes.Customers.name) }
+    val currentRoute = remember { mutableStateOf(Routes.Entries.name) }
 
     ModalNavigationDrawer(drawerContent = {
             NavigationDrawerContent(currentRoute, state, scope)

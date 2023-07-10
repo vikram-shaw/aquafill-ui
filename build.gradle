@@ -4,7 +4,7 @@ buildscript {
         mavenCentral()
     }
     ext {
-        compose_version = '1.4.3'
+        compose_version = '1.6.0-alpha01'
     }
     dependencies {
         // other plugins...
