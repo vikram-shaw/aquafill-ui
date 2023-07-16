@@ -15,7 +15,7 @@ data class EntryDto(
     @SerializedName("bottleType") val bottleType: String,
     @SerializedName("perBottleCost") val pricePerBottle: Double,
     @SerializedName("isPaid") val status: PaymentStatus,
-    @SerializedName("customerId") val customerId: String
+    @SerializedName("customer") val customerId: String
 )
 
 data class AddEntryDto(
@@ -26,5 +26,5 @@ data class AddEntryDto(
     @SerializedName("bottleType") val bottleType: String,
     @SerializedName("perBottleCost") val pricePerBottle: Double,
     @SerializedName("isPaid") val status: PaymentStatus,
-    @SerializedName("customerId") val customerId: String
+    @SerializedName("customer") val customerId: String
 )
