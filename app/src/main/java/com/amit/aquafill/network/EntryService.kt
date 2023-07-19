@@ -2,6 +2,7 @@ package com.amit.aquafill.network
 
 import com.amit.aquafill.network.model.AddEntryDto
 import com.amit.aquafill.network.model.EntryDto
+import com.amit.aquafill.network.response.AddEntryResponse
 import com.amit.aquafill.network.response.EntryResponse
 import com.amit.aquafill.presentation.ui.authorized.entry.PaymentStatus
 import kotlinx.coroutines.flow.Flow
@@ -24,7 +25,7 @@ interface EntryService {
         @Query("paidStatus") paidStatus: List<String>
     ): Response<List<EntryResponse>>
     @POST("entries/create")
-    suspend fun add(@Body entryDto: AddEntryDto): Response<EntryResponse>
+    suspend fun add(@Body entryDto: AddEntryDto): Response<AddEntryResponse>
     @PUT("entries/update/{id}")
     suspend fun update(@Path("id") id: String, @Body entryDto: EntryDto)
     @DELETE("entries/delete/{id}")

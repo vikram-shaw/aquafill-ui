@@ -4,6 +4,7 @@ import android.util.Log
 import com.amit.aquafill.network.EntryService
 import com.amit.aquafill.network.model.AddEntryDto
 import com.amit.aquafill.network.model.EntryDto
+import com.amit.aquafill.network.response.AddEntryResponse
 import com.amit.aquafill.network.response.EntryResponse
 import com.amit.aquafill.network.util.NetworkResult
 import com.amit.aquafill.presentation.ui.authorized.entry.PaymentStatus
@@ -35,7 +36,7 @@ class EntryRepository @Inject() constructor(private val entryService: EntryServi
         }
     }
 
-    override suspend fun add(entryDto: AddEntryDto): NetworkResult<EntryResponse> {
+    override suspend fun add(entryDto: AddEntryDto): NetworkResult<AddEntryResponse> {
         return try {
             val response = entryService.add(entryDto)
             if(response.isSuccessful) {

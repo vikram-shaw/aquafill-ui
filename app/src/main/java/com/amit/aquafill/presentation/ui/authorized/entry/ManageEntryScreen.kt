@@ -14,6 +14,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -388,6 +389,11 @@ fun ManageEntitiesScreen() {
                             modifier = Modifier.fillMaxWidth()
                         )
                     }
+                }
+                Button(onClick = { viewModel.getEntry()},
+                    enabled = options.value.selectedIndex != -1
+                ) {
+                    Text(text = "Filter")
                 }
                 entries.value.entries.forEachIndexed{ _, entry ->
                     Entry(entry)

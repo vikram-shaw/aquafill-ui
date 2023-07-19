@@ -121,13 +121,13 @@ class CustomerViewModel @Inject constructor(
         }
     }
 
-    private fun getEntry() {
+    fun getEntry() {
         viewModelScope.launch {
             when(val response = entryRepository.entries(
                 uiState.value.customers[uiState.value.selectedIndex].key,
                 uiState.value.startDate,
                 uiState.value.endDate,
-                listOf(PaymentStatus.Paid.name, PaymentStatus.Unpaid.name)
+                uiState.value.paymentStatus
             )
             ) {
                 is NetworkResult.Success -> {
@@ -171,7 +171,6 @@ class CustomerViewModel @Inject constructor(
             startDate = startDate,
             endDate = endDate
         )
-        getEntry()
     }
 
     fun updateBottleType(bottleType: String) {
