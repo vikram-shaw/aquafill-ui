@@ -30,7 +30,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -48,7 +47,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.amit.aquafill.R
-import com.amit.aquafill.network.model.EntryDto
+import com.amit.aquafill.network.response.CustomerResponse
+import com.amit.aquafill.network.response.EntryResponse
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -294,8 +294,8 @@ fun ManageEntitiesScreen() {
         }
     ) {
         var expanded by remember { mutableStateOf(false) }
-        var selectedIndex by remember { mutableIntStateOf(-1) }
         val options = viewModel.uiState.collectAsState()
+        val entries = viewModel.entriesUiState.collectAsState()
         if(options.value.isAddEntry) {
             AddEntry(viewModel)
         }
@@ -308,7 +308,7 @@ fun ManageEntitiesScreen() {
                         modifier = Modifier.fillMaxWidth(),
                         onClick = { expanded = true },
                         ) {
-                        Text(if(selectedIndex != -1) options.value.customers[selectedIndex].text else "Please select a customer")
+                        Text(if(options.value.selectedIndex != -1) options.value.customers[options.value.selectedIndex].text else "Please select a customer")
                     }
                     DropdownMenu(
                         expanded = expanded,
@@ -321,7 +321,7 @@ fun ManageEntitiesScreen() {
                             DropdownMenuItem(
                                 text = { Text(option.text) },
                                 onClick = {
-                                    selectedIndex = i
+                                    viewModel.updateIndex(i)
                                     expanded = false
                                 },
                             )
@@ -375,7 +375,12 @@ fun ManageEntitiesScreen() {
                 if (openedStart) {
                     DatePickerDialog(
                         onDismissRequest = { openedStart = false },
-                        confirmButton = {},
+                        confirmButton = {
+                            viewModel.updateDateRange(
+                                Date(dateState.selectedStartDateMillis!!),
+                                Date(if (dateState.selectedEndDateMillis == null) 832983289 else dateState.selectedEndDateMillis!!)
+                            )
+                        },
                         dismissButton = {}
                     ) {
                         DateRangePicker(
@@ -384,9 +389,9 @@ fun ManageEntitiesScreen() {
                         )
                     }
                 }
-
-                Entry()
-                Entry()
+                entries.value.entries.forEachIndexed{ _, entry ->
+                    Entry(entry)
+                }
             }
         }
     }
@@ -394,8 +399,8 @@ fun ManageEntitiesScreen() {
 
 @Composable
 fun Entry(
-    entryDto: EntryDto = EntryDto("entryId", "Amit Shaw", 4, 3, 5, Date.from(LocalDateTime.ofInstant(Date().toInstant(), ZoneId.systemDefault()).atZone(
-        ZoneId.systemDefault()).toInstant()), BottleType.Normal, 40.0, PaymentStatus.Paid, "customerId")
+    entryDto: EntryResponse = EntryResponse("entryId", 4, 3, 5, Date.from(LocalDateTime.ofInstant(Date().toInstant(), ZoneId.systemDefault()).atZone(
+        ZoneId.systemDefault()).toInstant()), BottleType.Normal, 40.0, PaymentStatus.Paid, "userId", CustomerResponse("","","",0))
 ) {
     Card (
         modifier = Modifier
@@ -409,7 +414,7 @@ fun Entry(
         ) {
             Row {
                 Column(modifier = Modifier.fillMaxWidth(0.5f)) {
-                    Text(entryDto.name.uppercase())
+                    Text(entryDto.customer.name.uppercase())
                     Text(text = "Given: ${entryDto.given}")
                     Text(text = "Taken: ${entryDto.taken}")
                     Text(text = "Remaining: ${entryDto.remaining}")

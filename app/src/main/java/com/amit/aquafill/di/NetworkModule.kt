@@ -26,7 +26,7 @@ object NetworkModule {
     @Singleton
     @Provides
     fun provideRetrofitBuilder(): Builder =
-        Builder().baseUrl("https://aqua-fill.onrender.com")
+        Builder().baseUrl("https://dark-toad-sunglasses.cyclic.app")
             .addConverterFactory(GsonConverterFactory.create())
 
     @Singleton

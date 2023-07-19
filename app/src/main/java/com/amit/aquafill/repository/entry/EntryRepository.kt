@@ -7,18 +7,32 @@ import com.amit.aquafill.network.model.EntryDto
 import com.amit.aquafill.network.response.EntryResponse
 import com.amit.aquafill.network.util.NetworkResult
 import com.amit.aquafill.presentation.ui.authorized.entry.PaymentStatus
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import java.util.Date
 import javax.inject.Inject
 
 class EntryRepository @Inject() constructor(private val entryService: EntryService): IEntryRepository {
-    override fun entries(
-        customerIds: List<String>,
+    override suspend fun entries(
+        customerId: String,
         startDate: Date,
         endDate: Date,
-        status: PaymentStatus
-    ): Flow<List<EntryDto>> {
-        return entryService.entries(customerIds, startDate, endDate, status)
+        status: List<String>
+    ): NetworkResult<List<EntryResponse>> {
+        return try {
+            val response = entryService.entries(customerId, startDate, endDate, status)
+            if(response.isSuccessful) {
+                NetworkResult.Success(
+                    data = response.body()!!
+                )
+            } else {
+                NetworkResult.Error("Something went wrong...")
+            }
+        } catch (e: Exception) {
+            NetworkResult.Error(e.message)
+        }
     }
 
     override suspend fun add(entryDto: AddEntryDto): NetworkResult<EntryResponse> {

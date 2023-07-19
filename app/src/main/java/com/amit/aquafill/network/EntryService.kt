@@ -17,12 +17,12 @@ import java.util.Date
 
 interface EntryService {
     @GET("entries/get")
-    fun entries(
-        @Query("customerIds") customerIds: List<String>,
+    suspend fun entries(
+        @Query("customerId") customerId: String,
         @Query("startDate") startDate: Date,
         @Query("endDate") endDate: Date,
-        @Query("paidStatus") status: PaymentStatus): Flow<List<EntryDto>>
-
+        @Query("paidStatus") paidStatus: List<String>
+    ): Response<List<EntryResponse>>
     @POST("entries/create")
     suspend fun add(@Body entryDto: AddEntryDto): Response<EntryResponse>
     @PUT("entries/update/{id}")

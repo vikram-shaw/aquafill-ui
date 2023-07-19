@@ -6,7 +6,6 @@ import java.util.Date
 
 data class EntryResponse(
     @SerializedName("_id") val id: String,
-    @SerializedName("name") val name: String,
     @SerializedName("filledBottleGiven") val given: Int,
     @SerializedName("emptyBottleTaken") val taken: Int,
     @SerializedName("remainingBottle") val remaining: Int,
@@ -14,6 +13,6 @@ data class EntryResponse(
     @SerializedName("bottleType") val bottleType: String,
     @SerializedName("perBottleCost") val pricePerBottle: Double,
     @SerializedName("isPaid") val status: PaymentStatus,
-    @SerializedName("userId") val userId: String,
-    @SerializedName("customerId") val customerId: String
+    @SerializedName("user") val userId: String,
+    @SerializedName("customer") val customer: CustomerResponse
 )

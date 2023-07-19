@@ -1,11 +1,10 @@
 package com.amit.aquafill.presentation.ui.authorized.entry
 
 import android.util.Log
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.amit.aquafill.network.model.AddEntryDto
+import com.amit.aquafill.network.response.EntryResponse
 import com.amit.aquafill.network.util.NetworkResult
 import com.amit.aquafill.repository.customer.ICustomerRepository
 import com.amit.aquafill.repository.entry.EntryRepository
@@ -28,8 +27,16 @@ data class EntryUIState(
     val bottleType: String,
     val perBottleCost: String,
     val status: PaymentStatus,
-    val isAddEntry: Boolean
-    )
+    val isAddEntry: Boolean,
+    val selectedIndex: Int,
+    val startDate: Date,
+    val endDate: Date,
+    val paymentStatus: List<String>,
+)
+
+data class EntriesUIState (
+    val entries: List<EntryResponse>,
+)
 
 @HiltViewModel
 class CustomerViewModel @Inject constructor(
@@ -45,9 +52,16 @@ class CustomerViewModel @Inject constructor(
         BottleType.Normal,
         "",
         PaymentStatus.Paid,
-        isAddEntry = false
+        isAddEntry = false,
+        -1,
+        Date(),
+        Date(),
+        emptyList()
     ))
     val uiState = _uiState.asStateFlow()
+
+    private val _entriesUiState = MutableStateFlow(EntriesUIState(emptyList()))
+    val entriesUiState = _entriesUiState.asStateFlow()
 
     init {
         getCustomers()
@@ -75,6 +89,11 @@ class CustomerViewModel @Inject constructor(
         }
     }
 
+    fun updateIndex(index: Int) {
+        _uiState.value = _uiState.value.copy(
+            selectedIndex = index
+        )
+    }
     fun addEntry() {
         viewModelScope.launch {
             val entry = AddEntryDto(
@@ -102,6 +121,31 @@ class CustomerViewModel @Inject constructor(
         }
     }
 
+    private fun getEntry() {
+        viewModelScope.launch {
+            when(val response = entryRepository.entries(
+                uiState.value.customers[uiState.value.selectedIndex].key,
+                uiState.value.startDate,
+                uiState.value.endDate,
+                listOf(PaymentStatus.Paid.name, PaymentStatus.Unpaid.name)
+            )
+            ) {
+                is NetworkResult.Success -> {
+                    Log.d("get entries", response.data!!.toString())
+                    _entriesUiState.value = _entriesUiState.value.copy(
+                        entries = response.data
+                    )
+                }
+                is NetworkResult.Error -> {
+                    Log.d("get entries", response.message.toString())
+                }
+                is NetworkResult.Loading -> {
+
+                }
+            }
+        }
+    }
+
     fun updateIsAddEntry(isEntry: Boolean) {
         _uiState.value = _uiState.value.copy(
             isAddEntry = isEntry
@@ -120,6 +164,14 @@ class CustomerViewModel @Inject constructor(
 
     fun updateDate(date: Date) {
         _uiState.value = _uiState.value.copy(date = date)
+    }
+
+    fun updateDateRange(startDate: Date, endDate: Date) {
+        _uiState.value = _uiState.value.copy(
+            startDate = startDate,
+            endDate = endDate
+        )
+        getEntry()
     }
 
     fun updateBottleType(bottleType: String) {
