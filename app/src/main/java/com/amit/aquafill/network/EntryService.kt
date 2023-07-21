@@ -4,8 +4,6 @@ import com.amit.aquafill.network.model.AddEntryDto
 import com.amit.aquafill.network.model.EntryDto
 import com.amit.aquafill.network.response.AddEntryResponse
 import com.amit.aquafill.network.response.EntryResponse
-import com.amit.aquafill.presentation.ui.authorized.entry.PaymentStatus
-import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE

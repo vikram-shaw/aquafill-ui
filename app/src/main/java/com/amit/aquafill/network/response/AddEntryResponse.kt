@@ -1,6 +1,5 @@
 package com.amit.aquafill.network.response
 
-
 import com.amit.aquafill.presentation.ui.authorized.entry.PaymentStatus
 import com.google.gson.annotations.SerializedName
 import java.util.Date

@@ -33,6 +33,7 @@ object NetworkModule {
     @Provides
     fun provideUserService(retrofitBuilder: Builder): UserService =
         retrofitBuilder.build().create(UserService::class.java)
+
     @Singleton
     @Provides
     fun provideOkHttpClient(interceptor: AuthInterceptor): OkHttpClient {
@@ -58,6 +59,7 @@ object NetworkModule {
     @Provides
     fun provideCustomerRepository(customerService: CustomerService):
             ICustomerRepository = CustomerRepository(customerService)
+
     @Singleton
     @Provides
     fun provideEntryAuth(retrofitBuilder: Builder, okHttpClient: OkHttpClient): EntryService =

@@ -5,9 +5,6 @@ import com.amit.aquafill.network.model.EntryDto
 import com.amit.aquafill.network.response.AddEntryResponse
 import com.amit.aquafill.network.response.EntryResponse
 import com.amit.aquafill.network.util.NetworkResult
-import com.amit.aquafill.presentation.ui.authorized.entry.PaymentStatus
-import kotlinx.coroutines.flow.Flow
-import retrofit2.Response
 import java.util.Date
 
 interface IEntryRepository {

@@ -1,6 +1,5 @@
 package com.amit.aquafill.network.response
 
-import com.amit.aquafill.network.model.CustomerDto
 import com.google.gson.annotations.SerializedName
 
 data class CustomerResponse(

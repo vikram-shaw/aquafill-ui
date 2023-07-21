@@ -1,6 +1,5 @@
 package com.amit.aquafill.repository.customer
 
-import android.util.Log
 import com.amit.aquafill.network.CustomerService
 import com.amit.aquafill.network.model.CustomerDto
 import com.amit.aquafill.network.response.CustomerResponse

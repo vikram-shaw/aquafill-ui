@@ -1,11 +1,9 @@
 package com.amit.aquafill.network
 
 import com.amit.aquafill.domain.model.User
-import com.amit.aquafill.network.response.UserInfoResponse
 import com.amit.aquafill.network.response.UserResponse
 import retrofit2.Response
 import retrofit2.http.Body
-import retrofit2.http.GET
 import retrofit2.http.POST
 
 interface UserService {

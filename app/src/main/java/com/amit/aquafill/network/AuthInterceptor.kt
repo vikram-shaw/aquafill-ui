@@ -1,6 +1,5 @@
 package com.amit.aquafill.network
 
-import android.util.Log
 import com.amit.aquafill.utils.TokenManager
 import okhttp3.Interceptor
 import okhttp3.Response
