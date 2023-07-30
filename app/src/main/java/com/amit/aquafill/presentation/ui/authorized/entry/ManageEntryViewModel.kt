@@ -1,6 +1,13 @@
 package com.amit.aquafill.presentation.ui.authorized.entry
 
+import android.R.attr.data
+import android.content.Context
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.pdf.PdfDocument
+import android.os.Environment
 import android.util.Log
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.amit.aquafill.network.model.AddEntryDto
@@ -12,8 +19,15 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.util.Date
 import javax.inject.Inject
+
 
 data class Option<T>(val key: T, val text: String, var isSelected: Boolean = false)
 
@@ -118,6 +132,84 @@ class CustomerViewModel @Inject constructor(
 
                 }
             }
+        }
+    }
+
+    val visiblePermissionDialogQueue = mutableStateListOf<String>()
+
+    fun dismissDialog() {
+        visiblePermissionDialogQueue.removeLast()
+    }
+
+    fun onPermissionResult(
+        permission: String,
+        isGranted: Boolean
+    ) {
+        if(!isGranted) {
+            visiblePermissionDialogQueue.add(0, permission);
+        }
+    }
+
+    fun generateBill(context: Context) {
+//        Log.d("Bill", "generateBill: started")
+//            Log.d("Bill", "generateBill: inside")
+//            val pdf = PdfDocument()
+//            val paint = Paint()
+//
+//            val pageInfo = PdfDocument.PageInfo.Builder(400, 600, 1).create()
+//            val page = pdf.startPage(pageInfo)
+//            val canvas = page.canvas
+//            canvas.drawText("Welcome ", 40.0f, 50.0f, paint)
+//            pdf.finishPage(page)
+//
+//            val file = File(Environment.getExternalStorageDirectory(),"/bill.pdf")
+//
+//            try{
+//                pdf.writeTo(FileOutputStream(file))
+//            } catch (e: IOException) {
+//                Log.d("Bill", e.message.toString())
+//            }
+//            pdf.close()
+        Log.v("abc", "start")
+        val extstoragedir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString()
+        Log.v("abc", extstoragedir)
+        val fol: File = File(extstoragedir)
+        Log.v("abc", fol.toString())
+        val folder = File(fol, "AquaBill")
+        if(!folder.exists()) {
+            Log.d("abc", "is side create new folder")
+            folder.mkdir()
+        }
+        Log.v("abc", folder.toString())
+        try {
+            Log.v("abc", "inside try")
+            val file = File(folder, "${LocalDateTime.now().toString().replace(":",".")}.pdf")
+            Log.v("abc", file.toString())
+            file.createNewFile()
+            Log.v("abc", file.toString())
+            val fOut = FileOutputStream(file)
+            Log.v("abc", fOut.toString())
+            val document = PdfDocument()
+            Log.v("abc", document.toString())
+            val pageInfo: PdfDocument.PageInfo = PdfDocument.PageInfo.Builder(210, 297, 1).create()
+            Log.v("abc", pageInfo.toString())
+            val page: PdfDocument.Page = document.startPage(pageInfo)
+            Log.v("abc", page.toString())
+            val canvas: Canvas = page.canvas
+            Log.v("abc", canvas.toString())
+            val paint = Paint()
+            Log.v("abc", paint.toString())
+            canvas.drawText("My name is vikram", 10.0f, 10.0f, paint)
+
+            Log.v("abc", "drawn")
+            document.finishPage(page)
+            Log.v("abc", "document finish page done")
+            document.writeTo(fOut)
+            Log.v("abc", "write to fOut")
+            document.close()
+            Log.v("abc", "document closed")
+        } catch (e: IOException) {
+            e.localizedMessage?.let { Log.i("abc", it) }
         }
     }
 

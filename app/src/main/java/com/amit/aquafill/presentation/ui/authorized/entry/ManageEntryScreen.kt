@@ -1,5 +1,7 @@
 package com.amit.aquafill.presentation.ui.authorized.entry
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -41,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
@@ -79,6 +82,13 @@ enum class PaymentStatus {
 @Composable
 fun RenderPreview() {
 
+}
+
+@Composable
+fun MyPDFContent() {
+    // Your Jetpack Compose UI content goes here
+    Text("Hello, this is my PDF content!")
+    // Add more Compose elements as needed
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -287,6 +297,7 @@ fun AddEntry(viewModel: CustomerViewModel
 @Composable
 fun ManageEntitiesScreen() {
     val viewModel = hiltViewModel<CustomerViewModel>()
+    val context = LocalContext.current;
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = { viewModel.updateIsAddEntry(true) }) {
@@ -334,6 +345,17 @@ fun ManageEntitiesScreen() {
                 val dateState = rememberDateRangePickerState(currentDate, currentDate)
                 var openedStart by remember { mutableStateOf(false) }
                 val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+
+
+                val permission = rememberLauncherForActivityResult(
+                    contract = ActivityResultContracts.RequestPermission(),
+                    onResult = {isGranted ->
+                        viewModel.onPermissionResult(
+                            permission = android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            isGranted = isGranted
+                        )
+                    }
+                )
 
                 Row {
                     OutlinedTextField(
@@ -390,10 +412,20 @@ fun ManageEntitiesScreen() {
                         )
                     }
                 }
-                Button(onClick = { viewModel.getEntry()},
-                    enabled = options.value.selectedIndex != -1
-                ) {
-                    Text(text = "Filter")
+                Row {
+                    Button(onClick = { viewModel.getEntry()},
+                        enabled = options.value.selectedIndex != -1
+                    ) {
+                        Text(text = "Filter")
+                    }
+                    Button(onClick = {
+                        permission.launch(
+                            android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+                        )
+                        viewModel.generateBill(context)
+                    }) {
+                        Text("Generate Bill")
+                    }
                 }
                 entries.value.entries.forEachIndexed{ _, entry ->
                     Entry(entry)
