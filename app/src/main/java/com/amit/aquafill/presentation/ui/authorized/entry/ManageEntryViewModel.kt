@@ -1,12 +1,12 @@
 package com.amit.aquafill.presentation.ui.authorized.entry
 
-import android.R.attr.data
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.pdf.PdfDocument
 import android.os.Environment
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -22,9 +22,10 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.time.LocalDate
+import java.time.Instant
 import java.time.LocalDateTime
-import java.time.ZoneOffset
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.Date
 import javax.inject.Inject
 
@@ -135,79 +136,90 @@ class CustomerViewModel @Inject constructor(
         }
     }
 
-    val visiblePermissionDialogQueue = mutableStateListOf<String>()
-
-    fun dismissDialog() {
-        visiblePermissionDialogQueue.removeLast()
-    }
+    private val visiblePermissionDialogQueue = mutableStateListOf<String>()
 
     fun onPermissionResult(
         permission: String,
         isGranted: Boolean
     ) {
         if(!isGranted) {
-            visiblePermissionDialogQueue.add(0, permission);
+            visiblePermissionDialogQueue.add(0, permission)
         }
     }
 
     fun generateBill(context: Context) {
-//        Log.d("Bill", "generateBill: started")
-//            Log.d("Bill", "generateBill: inside")
-//            val pdf = PdfDocument()
-//            val paint = Paint()
-//
-//            val pageInfo = PdfDocument.PageInfo.Builder(400, 600, 1).create()
-//            val page = pdf.startPage(pageInfo)
-//            val canvas = page.canvas
-//            canvas.drawText("Welcome ", 40.0f, 50.0f, paint)
-//            pdf.finishPage(page)
-//
-//            val file = File(Environment.getExternalStorageDirectory(),"/bill.pdf")
-//
-//            try{
-//                pdf.writeTo(FileOutputStream(file))
-//            } catch (e: IOException) {
-//                Log.d("Bill", e.message.toString())
-//            }
-//            pdf.close()
-        Log.v("abc", "start")
-        val extstoragedir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString()
-        Log.v("abc", extstoragedir)
-        val fol: File = File(extstoragedir)
-        Log.v("abc", fol.toString())
-        val folder = File(fol, "AquaBill")
+        val dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString()
+        val fol = File(dir)
+        val directory = "AquaBill"
+        val folder = File(fol, directory)
         if(!folder.exists()) {
-            Log.d("abc", "is side create new folder")
             folder.mkdir()
         }
-        Log.v("abc", folder.toString())
         try {
-            Log.v("abc", "inside try")
-            val file = File(folder, "${LocalDateTime.now().toString().replace(":",".")}.pdf")
-            Log.v("abc", file.toString())
+            val file = File(folder, "${LocalDateTime.now().toString().replace(":","")}.pdf")
             file.createNewFile()
-            Log.v("abc", file.toString())
             val fOut = FileOutputStream(file)
-            Log.v("abc", fOut.toString())
             val document = PdfDocument()
-            Log.v("abc", document.toString())
             val pageInfo: PdfDocument.PageInfo = PdfDocument.PageInfo.Builder(210, 297, 1).create()
-            Log.v("abc", pageInfo.toString())
             val page: PdfDocument.Page = document.startPage(pageInfo)
-            Log.v("abc", page.toString())
             val canvas: Canvas = page.canvas
-            Log.v("abc", canvas.toString())
             val paint = Paint()
-            Log.v("abc", paint.toString())
-            canvas.drawText("My name is vikram", 10.0f, 10.0f, paint)
+            paint.textAlign = Paint.Align.CENTER
+            paint.textSize = 10.0f
+            paint.isUnderlineText = true
+            paint.isFakeBoldText = true
+            canvas.drawText("BABLU WATER", pageInfo.pageWidth/2.0f, 20.0f, paint)
 
-            Log.v("abc", "drawn")
+//            val startDateZone: ZonedDateTime = _uiState.value.startDate.toInstant().atZone(ZoneId.of("Asia/Kolkata"))
+//            val endDateZone: ZonedDateTime = _uiState.value.endDate.toInstant().atZone(ZoneId.of("Asia/Kolkata"))
+//            canvas.drawText("BILL (${YearMonth.from(startDateZone)} - ${YearMonth.from(endDateZone)})", pageInfo.pageWidth/2.0f, 10.0f, paint)
+
+            paint.textSize = 5.0f
+            paint.isFakeBoldText = false
+            paint.isUnderlineText = false
+            canvas.drawText("18 ABHAY GUHA ROAD, LILUAH HOWRAH - 711204", pageInfo.pageWidth/2.0f, 30.0f, paint)
+            canvas.drawText("Contact - 6291154800, 8276938891", pageInfo.pageWidth/2.0f, 40.0f, paint)
+
+            paint.textAlign = Paint.Align.LEFT
+            val width = pageInfo.pageWidth
+            val netWidth = width - 20.0f
+            val partSize = netWidth / 4.0f
+
+            paint.style = Paint.Style.STROKE
+            canvas.drawRect(10.0f, 50.0f, width - 10.0f, 60.0f, paint)
+
+            val headers = arrayListOf("DATE", "QUANTITY", "NO. OF JARS X QTY", "AMOUNT")
+            paint.style = Paint.Style.FILL
+            canvas.drawLine(10.0f, 50.0f, 10.0f, 60.0f, paint)
+            for (i in 0..3)
+            {
+                canvas.drawLine(10.0f + (i + 1) * partSize, 50.0f, 10.0f + (i + 1) * partSize, 60.0f, paint)
+                canvas.drawText(headers[i], 11.0f + i * partSize, 57.0f, paint)
+            }
+
+            val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+            var y = 60.0f
+            _entriesUiState.value.entries.forEach{ entry ->
+                canvas.drawLine(10.0f, y + 10, width - 10.0f, y + 10, paint)
+                canvas.drawLine(10.0f, y, 10.0f, y + 10, paint)
+                val date = Instant.ofEpochMilli(entry.date.time)
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate()
+                    .format(dateFormatter)
+                val data = arrayListOf(date.toString(), entry.given.toString(), "${entry.given} X ${entry.pricePerBottle}", (entry.given * entry.pricePerBottle).toString())
+                for(i in 0..3)
+                {
+                    canvas.drawLine(10.0f + (i + 1) * partSize, y, 10.0f + (i + 1) * partSize, y + 10, paint)
+                    canvas.drawText(data[i], 11.0f + i * partSize, y + 7.0f, paint)
+                }
+                y += 10
+            }
+
             document.finishPage(page)
-            Log.v("abc", "document finish page done")
             document.writeTo(fOut)
-            Log.v("abc", "write to fOut")
             document.close()
-            Log.v("abc", "document closed")
+            Toast.makeText(context, "${file.name} saved to Download/${directory}", Toast.LENGTH_SHORT).show()
+
         } catch (e: IOException) {
             e.localizedMessage?.let { Log.i("abc", it) }
         }
