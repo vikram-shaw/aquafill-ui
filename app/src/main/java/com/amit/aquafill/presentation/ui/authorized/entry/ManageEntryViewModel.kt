@@ -188,7 +188,7 @@ class CustomerViewModel @Inject constructor(
             paint.style = Paint.Style.STROKE
             canvas.drawRect(10.0f, 50.0f, width - 10.0f, 60.0f, paint)
 
-            val headers = arrayListOf("DATE", "QUANTITY", "NO. OF JARS X QTY", "AMOUNT")
+            val headers = arrayListOf("DATE", "QUANTITY", "QTY X AMOUNT", "AMOUNT")
             paint.style = Paint.Style.FILL
             canvas.drawLine(10.0f, 50.0f, 10.0f, 60.0f, paint)
             for (i in 0..3)
