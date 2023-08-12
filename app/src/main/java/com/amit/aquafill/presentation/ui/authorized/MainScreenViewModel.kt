@@ -8,10 +8,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class MainScreenViewModel @Inject constructor(private val tokenManager: TokenManager): ViewModel() {
-    fun redirectIfLoggedIn(navController: NavController) {
-        if(tokenManager.getToken() == null) {
-            navController.navigate(Routes.Login.name)
-        }
-    }
+class MainScreenViewModel @Inject constructor(): ViewModel() {
+
 }

@@ -7,6 +7,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.amit.aquafill.network.util.NetworkResult
 import com.amit.aquafill.repository.user.IUserRepository
@@ -35,6 +36,15 @@ class LoginViewModel @Inject constructor(private val userRepository: IUserReposi
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
     private val emailPattern: Regex = Regex("[a-zA-Z\\d._-]+@[a-z]+\\.+[a-z]")
+    fun redirectIfLoggedIn(navController: NavController) {
+        if(tokenManager.getToken() != null) {
+            navController.navigate(Routes.Main.name) {
+                popUpTo(Routes.Login.name) {
+                    inclusive = true
+                }
+            }
+        }
+    }
     fun updateEmail(email: String) {
         val errors = mutableListOf<String>()
         val isEmailValid = if(!email.matches(emailPattern)) {
@@ -73,10 +83,9 @@ class LoginViewModel @Inject constructor(private val userRepository: IUserReposi
         viewModelScope.launch {
             when(val response = userRepository.signing(_uiState.value.currentEmail, _uiState.value.currentPassword)) {
                 is NetworkResult.Success -> {
-                    uiState.value.loading.value = false
                     tokenManager.save(response.data!!.token, response.data.user)
-                    Toast.makeText(context, "You are successfully logged in", Toast.LENGTH_SHORT).show()
-                    navController.popBackStack()
+                    uiState.value.loading.value = false
+                    redirectIfLoggedIn(navController)
                 }
                 else -> {
                     uiState.value.loading.value = false

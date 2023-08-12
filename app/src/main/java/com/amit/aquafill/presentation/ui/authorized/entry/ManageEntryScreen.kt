@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -26,6 +27,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -418,17 +420,21 @@ fun ManageEntitiesScreen() {
                     ) {
                         Text(text = "Filter")
                     }
-                    Button(onClick = {
+                    IconButton(onClick = {
                         permission.launch(
                             android.Manifest.permission.WRITE_EXTERNAL_STORAGE
                         )
                         viewModel.generateBill(context)
-                    }) {
-                        Text("Generate Bill")
+                    }, enabled = entries.value.entries.isNotEmpty()
+                    ) {
+                        Icon(imageVector = ImageVector.vectorResource(id = R.drawable.af_download_24),
+                            contentDescription = "download bill")
                     }
                 }
-                entries.value.entries.forEachIndexed{ _, entry ->
-                    Entry(entry)
+                LazyColumn{
+                    items(entries.value.entries.size){i ->
+                        Entry(entries.value.entries[i])
+                    }
                 }
             }
         }

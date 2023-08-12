@@ -188,7 +188,7 @@ class CustomerViewModel @Inject constructor(
             paint.style = Paint.Style.STROKE
             canvas.drawRect(10.0f, 50.0f, width - 10.0f, 60.0f, paint)
 
-            val headers = arrayListOf("DATE", "QUANTITY", "QTY X AMOUNT", "AMOUNT")
+            val headers = arrayListOf("DATE", "QUANTITY", "QTY X AMOUNT", "AMOUNT(₹)")
             paint.style = Paint.Style.FILL
             canvas.drawLine(10.0f, 50.0f, 10.0f, 60.0f, paint)
             for (i in 0..3)
@@ -199,6 +199,7 @@ class CustomerViewModel @Inject constructor(
 
             val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
             var y = 60.0f
+            var totalQuantity = 0; var totalAmount = 0.0
             _entriesUiState.value.entries.forEach{ entry ->
                 canvas.drawLine(10.0f, y + 10, width - 10.0f, y + 10, paint)
                 canvas.drawLine(10.0f, y, 10.0f, y + 10, paint)
@@ -206,7 +207,9 @@ class CustomerViewModel @Inject constructor(
                     .atZone(ZoneId.systemDefault())
                     .toLocalDate()
                     .format(dateFormatter)
-                val data = arrayListOf(date.toString(), entry.given.toString(), "${entry.given} X ${entry.pricePerBottle}", (entry.given * entry.pricePerBottle).toString())
+                totalQuantity += entry.given
+                totalAmount += (entry.given * entry.pricePerBottle)
+                val data = arrayListOf(date.toString(), entry.given.toString(), "${entry.given} X ${entry.pricePerBottle}", "₹ ${(entry.given * entry.pricePerBottle)}")
                 for(i in 0..3)
                 {
                     canvas.drawLine(10.0f + (i + 1) * partSize, y, 10.0f + (i + 1) * partSize, y + 10, paint)
@@ -214,6 +217,13 @@ class CustomerViewModel @Inject constructor(
                 }
                 y += 10
             }
+
+            paint.isFakeBoldText = true
+
+            canvas.drawText("TOTAL", 11.0f, y + 7.0f, paint)
+            canvas.drawText(totalQuantity.toString(), 11.0f + partSize, y + 7.0f, paint)
+            canvas.drawText("₹ $totalAmount", 11.0f + 3 * partSize, y + 7.0f, paint)
+            canvas.drawText("SIGNATURE", 11.0f, pageInfo.pageHeight - 10.0f, paint)
 
             document.finishPage(page)
             document.writeTo(fOut)

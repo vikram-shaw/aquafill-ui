@@ -30,6 +30,8 @@ fun Login(navController: NavHostController) {
     val focusManager = LocalFocusManager.current
     val context = LocalContext.current
 
+    loginViewModel.redirectIfLoggedIn(navController)
+
     Column(modifier = Modifier
         .fillMaxHeight()
         .padding(
